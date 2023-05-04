@@ -21,7 +21,7 @@ describe('ThreadRespositoryPostgres', () => {
   });
 
   describe('addThread function', () => {
-    it('should persist post thread and return posted thread corectly', async () => {
+    it('should persist post thread', async () => {
       // Arrange
       const postThread = new PostThread({
         title: 'thread title',

@@ -94,6 +94,30 @@ describe('CommentRespositoryPostgres', () => {
       // Act and assert
       await expect(commentRepositoryPostgres.findCommentById('comment-123')).resolves.not.toThrowError(NotFoundError);
     });
+
+    it('should return the comment correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-456', is_delete: false });
+
+      const fakeIdGenerator = () => '123'; // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const comments = await commentRepositoryPostgres.findCommentById('comment-123');
+
+      // Assert
+      console.log(comments);
+      expect(comments).toStrictEqual(
+        {
+          id: 'comment-123',
+          content: 'comment',
+          date: '20 jan 2023',
+          owner: 'user-456',
+          is_delete: false,
+          thread: 'thread-123',
+        },
+      );
+    });
   });
 
   describe('getCommentByThreadId function', () => {

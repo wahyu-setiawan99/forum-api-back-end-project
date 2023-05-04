@@ -1,3 +1,6 @@
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+
 /* eslint-disable class-methods-use-this */
 class DeleteCommentUseCase {
   constructor({ threadRepository, commentRepository }) {
@@ -8,10 +11,27 @@ class DeleteCommentUseCase {
   async execute(owner, useCasePayload) {
     this._validatePayload(useCasePayload);
     const { thread, comment } = useCasePayload;
+
     await this._threadRepository.findThreadById(thread);
-    await this._commentRepository.verifyCommentOwner(comment, owner);
-    await this._commentRepository.verifyCommentBelongToThread(comment, thread);
-    await this._commentRepository.verifyCommentDeletion(comment);
+
+    const checkComment = await this._commentRepository.findCommentById(comment);
+
+    if (checkComment.owner !== owner) {
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini!');
+    }
+
+    if (checkComment.thread !== thread) {
+      throw new NotFoundError('komentar tidak ditemukan pada thread yang dimaksud');
+    }
+
+    if (checkComment.is_delete) {
+      throw new NotFoundError('komentar tidak ditemukan');
+    }
+
+    // await this._commentRepository.verifyCommentOwner(comment, owner);
+    // await this._commentRepository.verifyCommentBelongToThread(comment, thread);
+    // await this._commentRepository.verifyCommentDeletion(comment);
+
     await this._commentRepository.deleteComment(comment);
   }
 

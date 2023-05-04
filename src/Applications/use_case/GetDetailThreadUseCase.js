@@ -11,26 +11,24 @@ class GetDetailThreadUseCase {
     const { thread } = useCasePayload;
     const threads = await this._threadRepository.getDetailThreadById(thread);
     const comments = await this._commentRepository.getCommentByThreadId(thread);
+    const replies = await this._replyRepository.getReplyByCommentIds(comments
+      .map((comment) => comment.id));
 
-    const detailThread = await Promise.all(comments.map(async (comment) => {
-      const replies = await this._replyRepository.getReplyByCommentId(comment.id);
-      const cleanedComment = {
-        ...comment,
-        is_delete: undefined,
-        replies: replies.map((reply) => ({
-          ...reply,
-          is_delete: undefined,
+    threads.comments = comments.map((comment) => ({
+      ...comment,
+      is_delete: undefined,
+      replies: replies
+        .map((reply) => (reply.comment === comment.id ? {
+          id: reply.id,
           content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
-        })),
-        content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
-      };
-      return cleanedComment;
+          date: reply.date,
+          username: reply.username,
+        } : undefined))
+        .filter((reply) => reply !== undefined),
+      content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
     }));
 
-    return {
-      ...threads,
-      comments: detailThread,
-    };
+    return threads;
   }
 
   _validatePayload(payload) {

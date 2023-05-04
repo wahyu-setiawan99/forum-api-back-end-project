@@ -15,7 +15,10 @@ describe('ReplyRespositoryPostgres', () => {
     await UsersTableTestHelper.addUser({ id: 'user-456', username: 'dicoding2' }); // for comment
 
     await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+
     await CommentsTableTestHelper.addComment({ id: 'comment-123', thread: 'thread-123', owner: 'user-456' });
+
+    await CommentsTableTestHelper.addComment({ id: 'comment-999', thread: 'thread-123', owner: 'user-123' });
   });
 
   afterEach(async () => {
@@ -78,8 +81,8 @@ describe('ReplyRespositoryPostgres', () => {
     });
   });
 
-  describe('getReplytByCommentId function', () => {
-    it('should return the detail reply correctly', async () => {
+  describe('getReplytByCommentIds function', () => {
+    it('should return the detail reply correctly from more than one comment at once', async () => {
       // Arrange
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
@@ -98,44 +101,106 @@ describe('ReplyRespositoryPostgres', () => {
         content: 'reply 2',
         date: '32 february 2200',
       });
+
       await RepliesTableTestHelper.deleteReply('reply-456');
+
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-789',
+        thread: 'thread-123',
+        comment: 'comment-999',
+        owner: 'user-456',
+        content: 'reply for comment 2',
+        date: '32 february 2211',
+      });
 
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
 
       // Action
-      const replies = await replyRepositoryPostgres.getReplyByCommentId('comment-123');
+      const replies = await replyRepositoryPostgres.getReplyByCommentIds(['comment-123', 'comment-999']);
 
       // Assert
       expect(replies).toStrictEqual(
         [
           {
             id: 'reply-123',
-            username: 'dicoding',
-            date: '31 february 2200',
             content: 'reply 1',
+            date: '31 february 2200',
+            comment: 'comment-123',
+            owner: 'user-123',
             is_delete: false,
+            username: 'dicoding',
           },
           {
             id: 'reply-456',
-            username: 'dicoding2',
-            date: '32 february 2200',
             content: 'reply 2',
+            date: '32 february 2200',
+            comment: 'comment-123',
+            owner: 'user-456',
             is_delete: true,
+            username: 'dicoding2',
+          },
+          {
+            id: 'reply-789',
+            content: 'reply for comment 2',
+            date: '32 february 2211',
+            comment: 'comment-999',
+            owner: 'user-456',
+            is_delete: false,
+            username: 'dicoding2',
           },
         ],
       );
     });
 
-    it('should return no reply properly and not throw any error if thread has no comments', async () => {
+    it('should return no reply for comment with no replies', async () => {
       // Arrange
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        thread: 'thread-123',
+        comment: 'comment-123',
+        owner: 'user-123',
+        content: 'reply 1',
+        date: '31 february 2200',
+      });
+
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-456',
+        thread: 'thread-123',
+        comment: 'comment-123',
+        owner: 'user-456',
+        content: 'reply 2',
+        date: '32 february 2200',
+      });
+
+      await RepliesTableTestHelper.deleteReply('reply-456');
+
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
 
       // Action
-      const replies = await replyRepositoryPostgres.getReplyByCommentId('comment-123dawda');
+      const replies = await replyRepositoryPostgres.getReplyByCommentIds(['comment-123', 'comment-999']); // comment 999 has no reply, but comment123 does
 
       // Assert
       expect(replies).toStrictEqual(
-        [],
+        [
+          {
+            id: 'reply-123',
+            content: 'reply 1',
+            date: '31 february 2200',
+            comment: 'comment-123',
+            owner: 'user-123',
+            is_delete: false,
+            username: 'dicoding',
+          },
+          {
+            id: 'reply-456',
+            content: 'reply 2',
+            date: '32 february 2200',
+            comment: 'comment-123',
+            owner: 'user-456',
+            is_delete: true,
+            username: 'dicoding2',
+          },
+        ],
       );
     });
   });
