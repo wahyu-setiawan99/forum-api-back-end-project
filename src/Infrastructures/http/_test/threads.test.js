@@ -5,10 +5,6 @@ const pool = require('../../database/postgres/pool');
 const createServer = require('../createServer');
 
 describe('/threads endpoint', () => {
-  beforeEach(async () => jest.setTimeout(30000));
-
-  beforeAll(async () => jest.setTimeout(30000));
-
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
