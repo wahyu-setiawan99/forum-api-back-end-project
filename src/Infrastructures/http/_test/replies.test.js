@@ -7,6 +7,8 @@ const pool = require('../../database/postgres/pool');
 const createServer = require('../createServer');
 
 describe('/replies endpoint', () => {
+  jest.useRealTimers();
+
   afterEach(async () => {
     await RepliesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
