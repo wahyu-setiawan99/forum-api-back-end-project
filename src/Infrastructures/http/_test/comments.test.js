@@ -6,7 +6,7 @@ const pool = require('../../database/postgres/pool');
 const createServer = require('../createServer');
 
 describe('/comments endpoint', () => {
-  jest.useRealTimers();
+  beforeEach(() => jest.useFakeTimers('legacy'));
 
   afterEach(async () => {
     await CommentsTableTestHelper.cleanTable();
@@ -19,6 +19,8 @@ describe('/comments endpoint', () => {
   });
 
   describe('when POST /threads/{threadId}/comments', () => {
+    jest.useFakeTimers('legacy');
+
     it('should response 201 and create comments', async () => {
       // Arrange
       const requestPayload = {
