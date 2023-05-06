@@ -32,5 +32,9 @@
     "jest": "^27.0.6",
     "node-pg-migrate": "^5.10.0",
     "nodemon": "^2.0.9"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 90000
   }
 }
