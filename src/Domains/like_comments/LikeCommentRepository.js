@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 class LikeCommentRepository {
-  async likeComment(likeComment, owner) {
+  async likeComment(comment, owner) {
     throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
@@ -9,7 +9,7 @@ class LikeCommentRepository {
     throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async commentLikeNumber(comment) {
+  async commentLikeNumberByThreadId(thread) {
     throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
