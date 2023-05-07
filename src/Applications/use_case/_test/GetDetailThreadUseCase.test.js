@@ -1,4 +1,5 @@
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
+const LikeCommentRepository = require('../../../Domains/like_comments/LikeCommentRepository');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const GetDetailThreadUseCase = require('../GetDetailThreadUseCase');
@@ -70,6 +71,24 @@ describe('GetDetailThreadUseCase', () => {
       },
     ];
 
+    const mockCommentLikes = [
+      {
+        id: 'like-fsf3ffs5_tmXV6bcvcdev8xk',
+        owner: 'anue',
+        comment: 'comment-_pby2_tmXV6bcvcdev8xk',
+      },
+      {
+        id: 'like-jgjj43fesfse4tgrgsgesesfs',
+        owner: 'fredy',
+        comment: 'comment-_pby2_tmXV6bcvcdev8xk',
+      },
+      {
+        id: 'comment-3413ersfesf23dvc232132',
+        owner: 'fredy',
+        comment: 'comment-3413ersfesf23dvc232132',
+      },
+    ];
+
     const mockDetailReplies = [
       {
         id: 'reply-BErOXUSefjwWGW1Z10Ihk',
@@ -101,6 +120,7 @@ describe('GetDetailThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeCommentRepository = new LikeCommentRepository();
 
     /* moking needed function */
     mockThreadRepository.getDetailThreadById = jest.fn()
@@ -109,12 +129,15 @@ describe('GetDetailThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(mockDetailComments));
     mockReplyRepository.getReplyByCommentIds = jest.fn()
       .mockImplementation(() => Promise.resolve(mockDetailReplies));
+    mockLikeCommentRepository.commentLikeNumber = jest.fn()
+      .mockImplementation(() => Promise.resolve(mockCommentLikes));
 
     /* creating use case instance */
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      likeCommentRepository: mockLikeCommentRepository,
     });
 
     // Action

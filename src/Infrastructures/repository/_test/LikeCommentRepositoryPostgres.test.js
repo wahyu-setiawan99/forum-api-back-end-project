@@ -171,7 +171,7 @@ describe('LikeCommentRespositoryPostgres', () => {
         likeComment.comment,
       );
 
-      expect(likeNumber).toStrictEqual(2);
+      expect(likeNumber).toHaveLength(2);
     });
   });
 });

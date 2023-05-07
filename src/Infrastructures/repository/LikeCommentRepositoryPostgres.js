@@ -45,7 +45,7 @@ class LikeCommentRepositoryPostgres extends LikeCommentRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rowCount;
+    return result.rows;
   }
 }
 
