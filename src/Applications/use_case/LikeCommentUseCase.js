@@ -1,5 +1,4 @@
 /* eslint-disable class-methods-use-this */
-const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 
 class LikeCommentUseCase {
@@ -17,17 +16,12 @@ class LikeCommentUseCase {
 
     const checkComment = await this._commentRepository.findCommentById(comment);
 
-    // verify the ownership of comment
-    if (checkComment.owner !== owner) {
-      throw new AuthorizationError('anda tidak berhak mengakses resource ini!');
-    }
-
-    // verify comment belongs to thread
+    // verify comment belongs to correct thread
     if (checkComment.thread !== thread) {
       throw new NotFoundError('komentar tidak ditemukan pada thread yang dimaksud');
     }
 
-    // verify if deleted
+    // verify if comment is deleted
     if (checkComment.is_delete) {
       throw new NotFoundError('komentar tidak ditemukan');
     }
