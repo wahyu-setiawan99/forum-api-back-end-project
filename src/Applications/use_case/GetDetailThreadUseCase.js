@@ -1,9 +1,12 @@
 /* eslint-disable class-methods-use-this */
 class GetDetailThreadUseCase {
-  constructor({ threadRepository, commentRepository, replyRepository }) {
+  constructor({
+    threadRepository, commentRepository, replyRepository, likeCommentRepository,
+  }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
     this._replyRepository = replyRepository;
+    this._likeCommentRepository = likeCommentRepository;
   }
 
   async execute(useCasePayload) {
@@ -11,6 +14,7 @@ class GetDetailThreadUseCase {
     const { thread } = useCasePayload;
     const threads = await this._threadRepository.getDetailThreadById(thread);
     const comments = await this._commentRepository.getCommentByThreadId(thread);
+    const commentLikes = await this._likeCommentRepository.commentLikeNumberByThreadId(thread);
     const replies = await this._replyRepository.getReplyByCommentIds(comments
       .map((comment) => comment.id));
 
@@ -26,6 +30,7 @@ class GetDetailThreadUseCase {
         } : undefined))
         .filter((reply) => reply !== undefined),
       content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
+      likeCount: commentLikes.filter((like) => like.comment === comment.id).length,
     }));
 
     return threads;
