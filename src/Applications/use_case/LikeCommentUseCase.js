@@ -1,22 +1,49 @@
+/* eslint-disable class-methods-use-this */
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+
 class LikeCommentUseCase {
-  constructor({ threadRepository, commentRepository, replyRepository }) {
+  constructor({ threadRepository, commentRepository, likeCommentRepository }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
-    this._replyRepository = replyRepository;
+    this._likeCommentRepository = likeCommentRepository;
   }
 
-   // verify comment belongs to thread
+  async execute(owner, useCasePayload) {
+    this._validatePayload(useCasePayload);
+    const { thread, comment } = useCasePayload;
+
+    await this._threadRepository.findThreadById(thread);
+
+    const checkComment = await this._commentRepository.findCommentById(comment);
 
     // verify the ownership of comment
+    if (checkComment.owner !== owner) {
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini!');
+    }
 
-    // for  delete reply also refactor
-  async execute(owner, useCasePayload) {
-    const postReply = new PostReply(useCasePayload);
-    await this._threadRepository.findThreadById(postReply.thread);
-    await this._commentRepository.findCommentById(postReply.comment);
-    await this._commentRepository
-.verifyCommentBelongToThread(postReply.comment, postReply.thread);
-    return this._replyRepository.addReply(owner, postReply);
+    // verify comment belongs to thread
+    if (checkComment.thread !== thread) {
+      throw new NotFoundError('komentar tidak ditemukan pada thread yang dimaksud');
+    }
+
+    // verify if deleted
+    if (checkComment.is_delete) {
+      throw new NotFoundError('komentar tidak ditemukan');
+    }
+
+    await this._likeCommentRepository.verifyLikedComment(comment, owner);
+  }
+
+  _validatePayload(payload) {
+    const { thread, comment } = payload;
+    if (!thread || !comment) {
+      throw new Error('LIKE_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
+    }
+
+    if (typeof thread !== 'string' || typeof comment !== 'string') {
+      throw new Error('LIKE_COMMENT.NOT_MEET_DATA_SPECIFICATION');
+    }
   }
 }
 

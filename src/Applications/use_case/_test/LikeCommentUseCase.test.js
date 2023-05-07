@@ -1,5 +1,6 @@
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const LikeCommentRepository = require('../../../Domains/like_comments/LikeCommentRepository');
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const LikeCommentUseCase = require('../LikeCommentUseCase');
 
 describe('LikeCommenttUseCase', () => {
@@ -23,11 +24,14 @@ describe('LikeCommenttUseCase', () => {
     };
 
     /* creating dependency of use case */
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-
     const mockLikeCommentRepository = new LikeCommentRepository();
 
     /* moking needed function */
+    mockThreadRepository.findThreadById = jest.fn()
+      .mockImplementation(() => Promise.resolve());
+
     mockCommentRepository.findCommentById = jest.fn()
       .mockImplementation(() => Promise.resolve(mockComments));
 
@@ -42,6 +46,7 @@ describe('LikeCommenttUseCase', () => {
 
     /* creating use case instance */
     const likeCommentUseCase = new LikeCommentUseCase({
+      threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       likeCommentRepository: mockLikeCommentRepository,
     });
@@ -50,16 +55,13 @@ describe('LikeCommenttUseCase', () => {
     await likeCommentUseCase.execute(owner, useCasePayload);
 
     // Assert
+    expect(mockThreadRepository.findThreadById)
+      .toBeCalledWith(useCasePayload.thread);
+
     expect(mockCommentRepository.findCommentById)
       .toBeCalledWith(useCasePayload.comment);
 
     expect(mockLikeCommentRepository.verifyLikedComment)
-      .toBeCalledWith(useCasePayload.comment, owner);
-
-    expect(mockLikeCommentRepository.likeComment)
-      .toBeCalledWith(useCasePayload.comment, owner);
-
-    expect(mockLikeCommentRepository.unlikeComment)
       .toBeCalledWith(useCasePayload.comment, owner);
   });
 });

@@ -28,10 +28,6 @@ class DeleteCommentUseCase {
       throw new NotFoundError('komentar tidak ditemukan');
     }
 
-    // await this._commentRepository.verifyCommentOwner(comment, owner);
-    // await this._commentRepository.verifyCommentBelongToThread(comment, thread);
-    // await this._commentRepository.verifyCommentDeletion(comment);
-
     await this._commentRepository.deleteComment(comment);
   }
 
