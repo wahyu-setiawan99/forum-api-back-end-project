@@ -1,16 +1,8 @@
 const routes = (handler) => ([
   {
-    method: 'POST',
-    path: '/threads/{threadId}/comments/{commentId}/replies',
-    handler: handler.postReplyHandler,
-    options: {
-      auth: 'forumapi_jwt',
-    },
-  },
-  {
-    method: 'DELETE',
-    path: '/threads/{threadId}/comments/{commentId}/replies/{replyId}',
-    handler: handler.deleteReplyHandler,
+    method: 'PUT',
+    path: '/threads/{threadId}/comments/{commentId}/likes',
+    handler: handler.likeCommentHandler,
     options: {
       auth: 'forumapi_jwt',
     },
