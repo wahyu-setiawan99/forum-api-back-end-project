@@ -9,6 +9,10 @@ class LikeCommentRepository {
     throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
+  async commentLikeNumber(comment) {
+    throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
   async unlikeComment(comment, owner) {
     throw new Error('LIKECOMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
