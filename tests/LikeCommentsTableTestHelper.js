@@ -12,7 +12,7 @@ const LikeCommentsTableTestHelper = {
   }) {
     const query = {
       text: 'INSERT INTO comment_likes VALUES($1, $2, $3)',
-      values: [id, comment, owner],
+      values: [id, owner, comment],
     };
 
     await pool.query(query);

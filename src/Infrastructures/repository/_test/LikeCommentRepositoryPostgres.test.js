@@ -159,8 +159,6 @@ describe('LikeCommentRespositoryPostgres', () => {
         thread: 'thread-123',
       };
 
-      const owner = 'user-123';
-
       const fakeIdGenerator = () => '123'; // stub!
 
       const likeCommentRepositoryPostgres = new LikeCommentRepositoryPostgres(
@@ -170,11 +168,10 @@ describe('LikeCommentRespositoryPostgres', () => {
 
       // Action and assert
       const likeNumber = await likeCommentRepositoryPostgres.commentLikeNumber(
-        owner,
         likeComment.comment,
       );
 
-      expect(likeNumber).toHaveLength(2);
+      expect(likeNumber).toStrictEqual(2);
     });
   });
 });
