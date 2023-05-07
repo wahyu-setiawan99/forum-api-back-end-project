@@ -32,7 +32,13 @@ class LikeCommentUseCase {
       throw new NotFoundError('komentar tidak ditemukan');
     }
 
-    await this._likeCommentRepository.verifyLikedComment(comment, owner);
+    const checkLikeComment = await this._likeCommentRepository.verifyLikedComment(owner, comment);
+
+    if (checkLikeComment.length > 0) {
+      await this._likeCommentRepository.unlikeComment(owner, comment);
+    } else {
+      await this._likeCommentRepository.likeComment(owner, comment);
+    }
   }
 
   _validatePayload(payload) {

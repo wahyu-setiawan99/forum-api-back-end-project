@@ -63,7 +63,7 @@ describe('LikeCommenttUseCase', () => {
     expect(mockLikeCommentRepository.verifyLikedComment)
       .toBeCalledWith(owner, useCasePayload.comment);
 
-    expect(mockCommentRepository.likeComment)
+    expect(mockLikeCommentRepository.likeComment)
       .toBeCalledWith(owner, useCasePayload.comment);
   });
 
@@ -127,7 +127,7 @@ describe('LikeCommenttUseCase', () => {
     expect(mockLikeCommentRepository.verifyLikedComment)
       .toBeCalledWith(owner, useCasePayload.comment);
 
-    expect(mockCommentRepository.unlikeComment)
+    expect(mockLikeCommentRepository.unlikeComment)
       .toBeCalledWith(owner, useCasePayload.comment);
   });
 });
