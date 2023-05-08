@@ -106,7 +106,6 @@ describe('CommentRespositoryPostgres', () => {
       const comments = await commentRepositoryPostgres.findCommentById('comment-123');
 
       // Assert
-      console.log(comments);
       expect(comments).toStrictEqual(
         {
           id: 'comment-123',

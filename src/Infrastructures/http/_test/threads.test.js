@@ -310,7 +310,7 @@ describe('/threads endpoint', () => {
       });
       const authenticationsUser2Json = JSON.parse(authenticationsUser2.payload);
 
-      // add comment to thread by user 2
+      // add comment1 to thread by user 2
       const comment = await server.inject({
         method: 'POST',
         url: `/threads/${threadId}/comments`,
@@ -323,6 +323,15 @@ describe('/threads endpoint', () => {
       });
       const commentJson = JSON.parse(comment.payload);
       const commentId = commentJson.data.addedComment.id;
+
+      // add like to comment 1 by user 1
+      await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${authenticationsUser1Json.data.accessToken}`,
+        },
+      });
 
       // add another comment2 to thread by user 1
       const comment2 = await server.inject({
@@ -419,6 +428,7 @@ describe('/threads endpoint', () => {
                 },
               ]),
               content: 'comment 1',
+              likeCount: 1,
             },
             {
               id: expect.any(String),
@@ -426,6 +436,7 @@ describe('/threads endpoint', () => {
               date: expect.any(String),
               replies: [],
               content: '**komentar telah dihapus**',
+              likeCount: 0,
             },
           ]),
         },
@@ -560,8 +571,8 @@ describe('/threads endpoint', () => {
       });
       const authenticationsUser2Json = JSON.parse(authenticationsUser2.payload);
 
-      // add comment to thread by user 2
-      await server.inject({
+      // add comment1 to thread by user 2
+      const comment1 = await server.inject({
         method: 'POST',
         url: `/threads/${threadId}/comments`,
         payload: {
@@ -569,6 +580,18 @@ describe('/threads endpoint', () => {
         },
         headers: {
           Authorization: `Bearer ${authenticationsUser2Json.data.accessToken}`,
+        },
+      });
+
+      const comment1Json = JSON.parse(comment1.payload);
+      const commentId = comment1Json.data.addedComment.id;
+
+      // add like to comment 1 by user 1
+      await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${authenticationsUser1Json.data.accessToken}`,
         },
       });
 
@@ -619,6 +642,7 @@ describe('/threads endpoint', () => {
               date: expect.any(String),
               replies: [],
               content: expect.any(String),
+              likeCount: 1,
             },
             {
               id: expect.any(String),
@@ -626,6 +650,7 @@ describe('/threads endpoint', () => {
               date: expect.any(String),
               replies: [],
               content: '**komentar telah dihapus**',
+              likeCount: 0,
             },
           ]),
         },
