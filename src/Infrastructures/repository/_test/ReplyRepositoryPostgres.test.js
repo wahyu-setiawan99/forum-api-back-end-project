@@ -239,15 +239,14 @@ describe('ReplyRespositoryPostgres', () => {
       const replies = await replyRepositoryPostgres.findReplyById('reply-123');
 
       // Assert
-      console.log(replies)
       expect(replies).toStrictEqual(
         {
           id: 'reply-123',
-          content: 'comment',
-          date: '20 jan 2023',
+          content: 'reply of comment',
+          date: '20 jan 2024',
+          comment: 'comment-123',
           owner: 'user-123',
           is_delete: false,
-          thread: 'thread-123',
         },
       );
     });
