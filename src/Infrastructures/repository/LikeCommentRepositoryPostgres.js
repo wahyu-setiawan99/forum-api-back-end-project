@@ -37,10 +37,10 @@ class LikeCommentRepositoryPostgres extends LikeCommentRepository {
     return result.rows;
   }
 
-  async commentLikeNumber(comment) {
+  async commentLikeNumberByThreadId(thread) {
     const query = {
-      text: 'SELECT * FROM comment_likes WHERE comment = $1',
-      values: [comment],
+      text: 'SELECT comment_likes.* FROM comment_likes INNER JOIN comments on comment_likes.comment = comments.id WHERE comments.thread = $1',
+      values: [thread],
     };
 
     const result = await this._pool.query(query);

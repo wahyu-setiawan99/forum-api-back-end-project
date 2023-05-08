@@ -11,6 +11,7 @@ describe('LikeCommentRespositoryPostgres', () => {
     await UsersTableTestHelper.addUser({ id: 'user-456', username: 'dicoding2' }); // comment owner
     await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' }); // add thread
     await CommentsTableTestHelper.addComment({ id: 'comment-123', thread: 'thread-123', owner: 'user-456' }); // add comment
+    await CommentsTableTestHelper.addComment({ id: 'comment-456', thread: 'thread-123', owner: 'user-456' }); // add comment 2
   });
 
   afterEach(async () => {
@@ -46,7 +47,15 @@ describe('LikeCommentRespositoryPostgres', () => {
 
       // Assert
       const likeComments = await LikeCommentsTableTestHelper.findLikedCommentById('like-123');
-      expect(likeComments).toHaveLength(1);
+
+      expect(likeComments).toStrictEqual([
+        {
+          comment: 'comment-123',
+          id: 'like-123',
+          owner: 'user-123',
+        },
+      ]);
+      await expect(likeComments).toHaveLength(1);
     });
   });
 
@@ -140,7 +149,7 @@ describe('LikeCommentRespositoryPostgres', () => {
   });
 
   describe('commentLikeNumber function', () => {
-    it('should return number of likers for a comment corectly', async () => {
+    it('should return number of likes and comments for a certain thread', async () => {
       // Arrange
       await LikeCommentsTableTestHelper.likeComment({
         id: 'like-123',
@@ -154,8 +163,13 @@ describe('LikeCommentRespositoryPostgres', () => {
         owner: 'user-456',
       });
 
-      const likeComment = {
-        comment: 'comment-123',
+      await LikeCommentsTableTestHelper.likeComment({
+        id: 'like-789',
+        comment: 'comment-456',
+        owner: 'user-123',
+      });
+
+      const detailThread = {
         thread: 'thread-123',
       };
 
@@ -167,11 +181,17 @@ describe('LikeCommentRespositoryPostgres', () => {
       );
 
       // Action and assert
-      const likeNumber = await likeCommentRepositoryPostgres.commentLikeNumber(
-        likeComment.comment,
+      const likeNumber = await likeCommentRepositoryPostgres.commentLikeNumberByThreadId(
+        detailThread.thread,
       );
 
-      expect(likeNumber).toHaveLength(2);
+      expect(likeNumber).toStrictEqual([
+        { id: 'like-123', owner: 'user-123', comment: 'comment-123' },
+        { id: 'like-456', owner: 'user-456', comment: 'comment-123' },
+        { id: 'like-789', owner: 'user-123', comment: 'comment-456' },
+      ]);
+
+      expect(likeNumber).toHaveLength(3);
     });
   });
 });
