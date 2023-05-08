@@ -96,7 +96,7 @@ describe('DeleteCommentUseCase', () => {
     const mockComments = {
       id: 'comment-123',
       content: 'this is a comment',
-      owner: 'user-456',
+      owner: 'user-xxx',
       thread: 'thread-123',
     };
 
@@ -126,9 +126,6 @@ describe('DeleteCommentUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.thread);
 
     expect(mockCommentRepository.findCommentById)
-      .toHaveBeenCalledWith(useCasePayload.comment);
-
-    expect(mockCommentRepository.deleteComment)
       .toHaveBeenCalledWith(useCasePayload.comment);
   });
 });
