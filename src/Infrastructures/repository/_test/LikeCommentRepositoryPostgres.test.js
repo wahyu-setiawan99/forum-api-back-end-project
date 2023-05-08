@@ -186,9 +186,21 @@ describe('LikeCommentRespositoryPostgres', () => {
       );
 
       expect(likeNumber).toStrictEqual([
-        { id: 'like-123', owner: 'user-123', comment: 'comment-123' },
-        { id: 'like-456', owner: 'user-456', comment: 'comment-123' },
-        { id: 'like-789', owner: 'user-123', comment: 'comment-456' },
+        {
+          id: 'like-123',
+          owner: 'user-123',
+          comment: 'comment-123',
+        },
+        {
+          id: 'like-456',
+          owner: 'user-456',
+          comment: 'comment-123',
+        },
+        {
+          id: 'like-789',
+          owner: 'user-123',
+          comment: 'comment-456',
+        },
       ]);
 
       expect(likeNumber).toHaveLength(3);
