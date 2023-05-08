@@ -17,6 +17,8 @@ describe('/comments endpoint', () => {
   });
 
   describe('when POST /threads/{threadId}/comments', () => {
+    jest.useFakeTimers('legacy');
+
     it('should response 201 and create comments', async () => {
       // Arrange
       const requestPayload = {

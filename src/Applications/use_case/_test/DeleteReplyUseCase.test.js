@@ -48,6 +48,20 @@ describe('DeleteReplyUseCase', () => {
 
     const owner = 'user-123';
 
+    const mockComment = {
+      id: 'comment-123',
+      owner: 'user-456',
+      thread: 'thread-123',
+      content: 'comment 1',
+    };
+
+    const mockReply = {
+      id: 'reply-123',
+      comment: 'comment-123',
+      owner: 'user-123',
+      content: 'reply 1',
+    };
+
     /* creating dependency of use case */
     const mockReplyRepository = new ReplyRepository();
     const mockCommentRepository = new CommentRepository();
@@ -57,15 +71,9 @@ describe('DeleteReplyUseCase', () => {
     mockThreadRepository.findThreadById = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockCommentRepository.findCommentById = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.verifyCommentBelongToThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.verifyReplyOwner = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.verifyReplyBelongToComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.verifyReplyDeletion = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(mockComment));
+    mockReplyRepository.findReplyById = jest.fn()
+      .mockImplementation(() => Promise.resolve(mockReply));
     mockReplyRepository.deleteReply = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
@@ -86,16 +94,7 @@ describe('DeleteReplyUseCase', () => {
     expect(mockCommentRepository.findCommentById)
       .toHaveBeenCalledWith(useCasePayload.comment);
 
-    expect(mockCommentRepository.verifyCommentBelongToThread)
-      .toHaveBeenCalledWith(useCasePayload.comment, useCasePayload.thread);
-
-    expect(mockReplyRepository.verifyReplyOwner)
-      .toHaveBeenCalledWith(useCasePayload.reply, owner);
-
-    expect(mockReplyRepository.verifyReplyBelongToComment)
-      .toHaveBeenCalledWith(useCasePayload.reply, useCasePayload.comment);
-
-    expect(mockReplyRepository.verifyReplyDeletion)
+    expect(mockReplyRepository.findReplyById)
       .toHaveBeenCalledWith(useCasePayload.reply);
 
     expect(mockReplyRepository.deleteReply)

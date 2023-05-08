@@ -1,3 +1,6 @@
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+
 /* eslint-disable class-methods-use-this */
 class DeleteReplyUseCase {
   constructor({ threadRepository, commentRepository, replyRepository }) {
@@ -13,11 +16,27 @@ class DeleteReplyUseCase {
     } = useCasePayload;
 
     await this._threadRepository.findThreadById(thread);
-    await this._commentRepository.findCommentById(comment);
-    await this._commentRepository.verifyCommentBelongToThread(comment, thread);
-    await this._replyRepository.verifyReplyOwner(reply, owner);
-    await this._replyRepository.verifyReplyBelongToComment(reply, comment);
-    await this._replyRepository.verifyReplyDeletion(reply);
+
+    const checkComment = await this._commentRepository.findCommentById(comment);
+
+    if (checkComment.thread !== thread) {
+      throw new NotFoundError('komentar tidak ditemukan pada thread yang dimaksud');
+    }
+
+    const checkReply = await this._replyRepository.findReplyById(reply);
+
+    if (checkReply.owner !== owner) {
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini!');
+    }
+
+    if (checkReply.comment !== comment) {
+      throw new NotFoundError('reply tidak terdapat pada komentar yang dimaksud');
+    }
+
+    if (checkReply.is_delete) {
+      throw new NotFoundError('reply tidak ditemukan');
+    }
+
     await this._replyRepository.deleteReply(reply);
   }
 

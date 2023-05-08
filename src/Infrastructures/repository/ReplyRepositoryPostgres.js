@@ -35,6 +35,21 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     return result.rows;
   }
 
+  async findReplyById(id) {
+    const query = {
+      text: 'SELECT * FROM replies WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('reply tidak ditemukan');
+    }
+
+    return result.rows[0];
+  }
+
   async verifyReplyOwner(id, owner) {
     const query = {
       text: 'SELECT * FROM replies WHERE id = $1',

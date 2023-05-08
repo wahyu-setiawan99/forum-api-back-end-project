@@ -18,6 +18,9 @@ exports.up = (pgm) => {
     },
   });
 
+  // add unique
+  pgm.addConstraint('comment_likes', 'unique_owner_and_comment', 'UNIQUE(owner, comment)');
+
   // add constraint foreign key to  comment referenced to comments.id
   pgm.addConstraint('comment_likes', 'fk_comment_likes.comment_comments.id', 'FOREIGN KEY(comment) REFERENCES comments(id) ON DELETE CASCADE');
 
