@@ -1,3 +1,6 @@
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const LikeCommentsTableTestHelper = require('../../../../tests/LikeCommentsTableTestHelper');
+const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const container = require('../../container');
@@ -8,6 +11,9 @@ describe('/threads endpoint', () => {
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
+    await CommentsTableTestHelper.cleanTable();
+    await RepliesTableTestHelper.cleanTable();
+    await LikeCommentsTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
