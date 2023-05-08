@@ -16,6 +16,7 @@ class DeleteCommentUseCase {
 
     const checkComment = await this._commentRepository.findCommentById(comment);
 
+    // check the comment owner
     if (checkComment.owner !== owner) {
       throw new AuthorizationError('anda tidak berhak mengakses resource ini!');
     }
