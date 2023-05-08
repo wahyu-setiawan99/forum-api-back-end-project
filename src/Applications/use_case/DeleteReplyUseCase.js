@@ -1,3 +1,5 @@
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+
 /* eslint-disable class-methods-use-this */
 class DeleteReplyUseCase {
   constructor({ threadRepository, commentRepository, replyRepository }) {
@@ -13,9 +15,13 @@ class DeleteReplyUseCase {
     } = useCasePayload;
 
     await this._threadRepository.findThreadById(thread);
-    await this._commentRepository.findCommentById(comment);
 
-    // await this._commentRepository.verifyCommentBelongToThread(comment, thread);
+    const checkComment = await this._commentRepository.findCommentById(comment);
+
+    if (checkComment.thread !== thread) {
+      throw new NotFoundError('komentar tidak ditemukan pada thread yang dimaksud');
+    }
+
     await this._replyRepository.verifyReplyOwner(reply, owner);
     await this._replyRepository.verifyReplyBelongToComment(reply, comment);
     await this._replyRepository.verifyReplyDeletion(reply);
