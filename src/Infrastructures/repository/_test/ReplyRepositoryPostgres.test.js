@@ -205,6 +205,54 @@ describe('ReplyRespositoryPostgres', () => {
     });
   });
 
+  describe('findReplyById', () => {
+    it('should throw NotFoundError when reply id not found', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123', owner: 'user-123', is_delete: false });
+
+      const fakeIdGenerator = () => '123'; // stub!
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Act and assert
+      await expect(replyRepositoryPostgres.findReplyById('wrong-id')).rejects.toThrowError(NotFoundError);
+    });
+
+    it('should not throw NotFoundError comment is found', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123', owner: 'user-123', is_delete: false });
+
+      const fakeIdGenerator = () => '123'; // stub!
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Act and assert
+      await expect(replyRepositoryPostgres.findReplyById('reply-123')).resolves.not.toThrowError(NotFoundError);
+    });
+
+    it('should return the reply correctly', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123', owner: 'user-123', is_delete: false });
+
+      const fakeIdGenerator = () => '123'; // stub!
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const replies = await replyRepositoryPostgres.findReplyById('reply-123');
+
+      // Assert
+      console.log(replies)
+      expect(replies).toStrictEqual(
+        {
+          id: 'reply-123',
+          content: 'comment',
+          date: '20 jan 2023',
+          owner: 'user-123',
+          is_delete: false,
+          thread: 'thread-123',
+        },
+      );
+    });
+  });
+
   describe('verifyReplyOwner', () => {
     it('should throw NotFoundError when reply id not found', async () => {
       // Arrange
